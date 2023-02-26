@@ -1,8 +1,9 @@
-version: '3.7'
+version: '3.9'
 
 services:
   db:
-    image: postgres:12.0-alpine
+    image: postgres:15-alpine
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     networks:
@@ -11,14 +12,15 @@ services:
       - ./.env
 
   backend:
-    restart: unless-stopped
+    restart: always
     build:
       context: .
-      dockerfile: ./docker/backend/Dockerfile
+    ports:
+      -  8000:8000
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
-    entrypoint: /app/docker/backend/wsgi-entrypoint.sh
+    entrypoint: ./wsgi-entrypoint.sh
     networks:
       - my-network
     depends_on:
@@ -27,14 +29,14 @@ services:
       - ./.env
 
   nginx:
-    restart: unless-stopped
+    restart: always
     build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
+      context: ./docker/nginx/
+      dockerfile: Dockerfile
     ports:
-      - 443:80
+      - 80:80
+      - 443:443
     volumes:
-      - ./docker/nginx/dev:/etc/nginx/conf.d
       - static_volume:/app/static
       - media_volume:/app/media
     networks:
