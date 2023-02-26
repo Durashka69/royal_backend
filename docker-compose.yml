@@ -39,13 +39,21 @@ services:
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/html
     networks:
       - my-network
     depends_on:
       - db
       - backend
 
-
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    command: certonly --webroot --webroot-path=/var/www/html --email gulyashshsh@gmail.com --agree-tos --no-eff-email -d brooklyn.kg
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/html
 
 volumes:
   static_volume:
