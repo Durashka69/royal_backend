@@ -35,7 +35,7 @@ services:
       context: ./docker/nginx
       dockerfile: Dockerfile
     ports:
-      - "443:80"
+      - "443:443"
     volumes:
       - ./static/:/static
       - ./media/:/media
